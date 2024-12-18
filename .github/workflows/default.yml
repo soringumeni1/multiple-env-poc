@@ -22,12 +22,6 @@ jobs:
         with:
           ref: main
 
-      - name: Read VERSION file
-        id: getversion
-        run: |
-          sed -n 's/^appVersion:\(.*\)/\1/p' < chart/metadata-fed/Chart.yaml > version
-          echo "version=$(sed '/.*\"\(.*\)\".*/ s//\1/g' version)" >> $GITHUB_OUTPUT
-
       - name: Create the release
         uses: "marvinpinto/action-automatic-releases@latest"
         with:
