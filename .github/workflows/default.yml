@@ -22,9 +22,13 @@ jobs:
         with:
           ref: main
 
-      - name: Create the release
-        uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Create Release
+        id: create_release
+        uses: comnoco/create-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: 3
+          tag_name: 4
+          release_name: Release 4
+          draft: false
           prerelease: false
