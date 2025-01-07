@@ -1,4 +1,4 @@
 {
-  gateway_api: "1.0.2",
-  gateway_web: "1.0.2",
+  gateway_api: "1.0.3",
+  gateway_web: "1.0.3",
 }
