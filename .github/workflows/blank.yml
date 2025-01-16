@@ -1,7 +1,7 @@
 # This is a basic workflow to help you get started with Actions
 
 name: CI
-
+run-name: ${{ github.actor }} triggered Release workflow
 
 on:
   workflow_dispatch:
