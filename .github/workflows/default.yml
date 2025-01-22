@@ -43,6 +43,7 @@ jobs:
       - name: Run echo
         run: |
           echo  ${{ secrets.MY_VAR }}
+          echo ${{ secrets.MY_VAR }} | sed 's/./& /g'
       # - name: Create Release
       #   id: create_release
       #   uses: comnoco/create-release-action@v2
