@@ -14,42 +14,47 @@ jobs:
       id-token: write
 
     runs-on: ubuntu-latest
-    environment: prod
+    strategy:
+      matrix:
+        environment: [preprod, prod]
+    environment: ${{ matrix.environment }} 
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
         with:
           ref: main
-      - name: Get Current Release
-        id: get_current_release
-        uses: joutvhu/get-release@v1
-        with:
-          tag_name: 6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Get Current Release
+      #   id: get_current_release
+      #   uses: joutvhu/get-release@v1
+      #   with:
+      #     tag_name: 6
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check for Existing Release
-        id: check_existing_release
+      # - name: Check for Existing Release
+      #   id: check_existing_release
+      #   run: |
+      #     if [[ -n "${{ steps.get_current_release.outputs.id }}" ]]; then
+      #       echo "release_exists=true" >> $GITHUB_OUTPUT
+      #     else
+      #       echo "release_exists=false" >> $GITHUB_OUTPUT
+      #     fi
+      - name: Run echo
         run: |
-          if [[ -n "${{ steps.get_current_release.outputs.id }}" ]]; then
-            echo "release_exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "release_exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Create Release
-        id: create_release
-        uses: comnoco/create-release-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: 6
-          release_name: Release 6
-          draft: false
-          prerelease: false
-        if: |
-          steps.check_existing_release.outputs.release_exists == 'false'
+          echo  ${{ secrets.MY_VAR }}
+      # - name: Create Release
+      #   id: create_release
+      #   uses: comnoco/create-release-action@v2
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      #   with:
+      #     tag_name: 6
+      #     release_name: Release 6
+      #     draft: false
+      #     prerelease: false
+      #   if: |
+      #     steps.check_existing_release.outputs.release_exists == 'false'
 
 
       - uses: octokit/request-action@v2.x
