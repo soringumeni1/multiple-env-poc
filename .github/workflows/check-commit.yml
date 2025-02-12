@@ -2,7 +2,7 @@ name: Check Squash Commit Message
 
 on:
   pull_request:
-    types: [closed, open]
+    types: [opened, edited, synchronize]
 
 jobs:
   check:
