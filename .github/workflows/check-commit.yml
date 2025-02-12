@@ -2,26 +2,28 @@ name: Check Squash Commit Message
 
 on:
   pull_request:
-    types: [opened, synchronize, edited]
+    types: [closed]
 
 jobs:
   check:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get the latest commit message
+    - name: Get the merge commit message
       run: |
-        latest_commit_message=$(git log -1 --pretty=%B)
-        echo "$latest_commit_message" > latest_commit_message.txt
+        PR_NUMBER=$(echo ${{ github.event.pull_request.number }})
+        commit_message=$(gh pr view $PR_NUMBER --json mergeCommit | jq -r '.mergeCommit.message')
+        echo "$commit_message" > commit_message.txt
 
-    - name: Check latest commit message
+    - name: Check merge commit message
       run: |
         pattern="^(\w+): (\w+ \w+)$"
-        latest_commit_message=$(cat latest_commit_message.txt)
-        if [[ ! "$latest_commit_message" =~ $pattern ]]; then
+        commit_message=$(cat commit_message.txt)
+        if [[ ! "$commit_message" =~ $pattern ]]; then
           echo "Commit message does not follow the required format: 'type: subject'"
           echo "Example: 'feat: add new feature'"
           exit 1
