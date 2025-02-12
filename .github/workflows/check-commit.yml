@@ -2,28 +2,37 @@ name: Check Squash Commit Message
 
 on:
   pull_request:
-    types: [opened, edited, synchronize]
+    types: [opened, synchronize, reopened]
 
 jobs:
   check:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get the merge commit message
+    - name: Get the latest commit message
       run: |
-        PR_NUMBER=$(echo ${{ github.event.pull_request.number }})
-        commit_message=$(gh pr view $PR_NUMBER --json mergeCommit | jq -r '.mergeCommit.message')
-        echo "$commit_message" > commit_message.txt
+        echo "Pull request number: ${{ github.event.pull_request.number }}"
+        PR_NUMBER=${{ github.event.pull_request.number }}
+        merge_commit_sha=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                        "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" | jq -r '.merge_commit_sha')
+        
+        if [ "$merge_commit_sha" != "null" ]; then
+          latest_commit_message=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                                    "https://api.github.com/repos/${{ github.repository }}/commits/$merge_commit_sha" | jq -r '.commit.message')
+          echo "$latest_commit_message" > latest_commit_message.txt
+        else
+          echo "No merge commit message available. Skipping check."
+          exit 0
+        fi
 
-    - name: Check merge commit message
+    - name: Check latest commit message
       run: |
         pattern="^(\w+): (\w+ \w+)$"
-        commit_message=$(cat commit_message.txt)
-        if [[ ! "$commit_message" =~ $pattern ]]; then
+        latest_commit_message=$(cat latest_commit_message.txt)
+        if [[ ! "$latest_commit_message" =~ $pattern ]]; then
           echo "Commit message does not follow the required format: 'type: subject'"
           echo "Example: 'feat: add new feature'"
           exit 1
