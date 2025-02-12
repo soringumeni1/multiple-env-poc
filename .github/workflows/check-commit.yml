@@ -1,0 +1,28 @@
+name: Check Squash Commit Message
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Get the latest commit message
+      run: |
+        latest_commit_message=$(git log -1 --pretty=%B)
+        echo "$latest_commit_message" > latest_commit_message.txt
+
+    - name: Check latest commit message
+      run: |
+        pattern="^(\w+): (\w+ \w+)$"
+        latest_commit_message=$(cat latest_commit_message.txt)
+        if [[ ! "$latest_commit_message" =~ $pattern ]]; then
+          echo "Commit message does not follow the required format: 'type: subject'"
+          echo "Example: 'feat: add new feature'"
+          exit 1
+        fi
