@@ -6,8 +6,12 @@ run-name: ${{ github.actor }} triggered Release workflow
 on:
   workflow_dispatch:
     inputs:
-      env:
-        description: 'Select environment to deploy'
+      schemata_branch:
+        description: "Schemata branch to be used by the unit tests"
+        default: master
+      traser_mapping_branch:
+        description: "Traser mapping files branch to be used by the unit tests"
+        default: master
 
 
 
@@ -17,7 +21,7 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    environment:  ${{ github.event.inputs.env }}
+    environment:  dev
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -27,7 +31,8 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: |
-           echo environment ${{ github.event.inputs.env }}
+           echo schemata_branch ${{ github.event.inputs.schemata_branch }}
+           echo traser_mapping_branch ${{ github.event.inputs.traser_mapping_branch }}
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
