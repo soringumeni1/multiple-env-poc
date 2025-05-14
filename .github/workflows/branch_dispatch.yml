@@ -4,6 +4,10 @@ name: CI
 run-name: ${{ github.actor }} triggered Release workflow
 
 on:
+  push:
+    branches:
+      - dev
+      - main
   workflow_dispatch:
     inputs:
       schemata_branch:
