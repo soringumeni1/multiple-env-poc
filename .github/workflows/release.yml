@@ -1,0 +1,24 @@
+name: Run release workflow
+run-name: ${{ github.actor }} triggered release workflow
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  deploy:
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+    - name: Read VERSION file
+        id: getversion
+        shell: bash
+        run: |
+          # GITHUB_REF_NAME is "release/1.23.1"
+          # The syntax ${VAR#prefix} removes the prefix
+          VERSION=${GITHUB_REF_NAME#release/}
+          
+          echo "Version detected: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
